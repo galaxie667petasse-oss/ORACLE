@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>⚽ Football Oracle</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:#020617;color:#F1F5F9;font-family:system-ui,-apple-system,sans-serif;min-height:100vh;}
+  input,button,textarea{font-family:inherit;}
+  ::-webkit-scrollbar{width:6px;} ::-webkit-scrollbar-track{background:#0F172A;} ::-webkit-scrollbar-thumb{background:#1E293B;border-radius:3px;}
+
+  /* KEYS PAGE */
+  #keys-page{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px;background:radial-gradient(ellipse at top,#0F172A,#020617);}
+  .keys-box{width:100%;max-width:460px;}
+  .logo{text-align:center;margin-bottom:48px;}
+  .logo .ball{font-size:72px;filter:drop-shadow(0 0 50px #38BDF899);display:block;margin-bottom:16px;}
+  .logo h1{font-size:36px;font-weight:900;letter-spacing:10px;color:#F1F5F9;text-transform:uppercase;}
+  .logo p{color:#38BDF8;font-size:13px;letter-spacing:5px;font-weight:600;margin-top:10px;}
+  .logo-line{width:80px;height:3px;background:linear-gradient(90deg,#38BDF8,#6366F1);margin:20px auto 0;border-radius:2px;}
+  .field-label{display:block;color:#94A3B8;font-size:12px;letter-spacing:3px;font-weight:700;margin-bottom:10px;text-transform:uppercase;}
+  .field-wrap{margin-bottom:20px;}
+  .field-input{width:100%;background:#0F172A;border:2px solid #1E293B;border-radius:12px;padding:18px;color:#F1F5F9;font-size:14px;outline:none;transition:border-color .3s;}
+  .field-input:focus{border-color:#38BDF8;}
+  .field-input.bankroll{color:#10B981;font-size:24px;font-weight:900;text-align:center;}
+  .field-hint{color:#475569;font-size:11px;text-align:center;margin-top:8px;}
+  .info-box{background:#0F172A;border:1px solid #1E293B;border-radius:12px;padding:18px;margin-bottom:24px;line-height:2;}
+  .info-box .info-title{color:#64748B;font-size:11px;font-weight:700;letter-spacing:2px;margin-bottom:8px;}
+  .info-box .info-item{color:#475569;font-size:12px;}
+  .info-box .info-cost{color:#334155;font-size:11px;margin-top:8px;}
+  .btn-enter{width:100%;padding:18px;background:linear-gradient(135deg,#38BDF8,#6366F1);border:none;border-radius:12px;color:#fff;font-size:14px;font-weight:900;letter-spacing:4px;cursor:pointer;text-transform:uppercase;box-shadow:0 8px 40px #38BDF833;transition:all .3s;}
+  .btn-enter:disabled{background:#1E293B;color:#475569;box-shadow:none;cursor:not-allowed;}
+  .privacy{color:#1E293B;font-size:10px;text-align:center;margin-top:14px;}
+
+  /* MAIN PAGE */
+  #main-page{display:none;min-height:100vh;}
+  .header{background:linear-gradient(180deg,#0F172A,#020617);border-bottom:1px solid #1E293B;padding:16px 24px;position:sticky;top:0;z-index:100;}
+  .header-inner{display:flex;align-items:center;justify-content:space-between;max-width:1100px;margin:0 auto;flex-wrap:wrap;gap:12px;}
+  .header-logo{display:flex;align-items:center;gap:14px;}
+  .header-ball{font-size:28px;filter:drop-shadow(0 0 14px #38BDF8);}
+  .header-title{font-weight:900;letter-spacing:5px;font-size:18px;color:#F1F5F9;}
+  .header-sub{color:#475569;font-size:10px;letter-spacing:2px;margin-top:2px;}
+  .header-stats{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .stat-chip{background:#0F172A;border:1px solid #1E293B;border-radius:10px;padding:10px 16px;font-size:14px;font-weight:800;}
+  .stat-chip.green{color:#10B981;}
+  .stat-chip.win{border-color:#10B98155;}
+  .stat-chip.loss{border-color:#EF444455;}
+  .btn-settings{background:transparent;border:1px solid #1E293B;color:#64748B;padding:10px 16px;border-radius:10px;cursor:pointer;font-size:12px;font-weight:600;}
+
+  .tabs{background:#0F172A;border-bottom:1px solid #1E293B;}
+  .tabs-inner{display:flex;max-width:1100px;margin:0 auto;}
+  .tab-btn{flex:1;padding:16px;background:none;border:none;border-bottom:3px solid transparent;color:#475569;font-size:14px;font-weight:800;letter-spacing:3px;cursor:pointer;transition:all .2s;}
+  .tab-btn.active{border-bottom-color:#38BDF8;color:#38BDF8;}
+
+  .content{max-width:1100px;margin:0 auto;padding:28px 24px;}
+
+  /* SCAN CARD */
+  .scan-card{background:linear-gradient(135deg,#0F172A,#1E293B40);border:1px solid #1E293B;border-radius:20px;padding:28px;margin-bottom:28px;}
+  .scan-idle{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;}
+  .scan-title{font-size:22px;font-weight:900;color:#F1F5F9;margin-bottom:8px;}
+  .scan-sub{color:#64748B;font-size:14px;}
+  .btn-scan{padding:18px 40px;background:linear-gradient(135deg,#38BDF8,#6366F1);border:none;border-radius:14px;color:#fff;font-size:16px;font-weight:900;letter-spacing:3px;cursor:pointer;white-space:nowrap;box-shadow:0 8px 40px #38BDF844;transition:all .3s;}
+  .btn-scan:hover{transform:translateY(-2px);box-shadow:0 12px 50px #38BDF866;}
+
+  /* PROGRESS */
+  .progress-section{}
+  .progress-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+  .progress-msg{color:#F1F5F9;font-size:16px;font-weight:700;}
+  .progress-pct{color:#38BDF8;font-size:28px;font-weight:900;}
+  .progress-bar-wrap{height:16px;background:#020617;border-radius:100px;overflow:hidden;border:1px solid #1E293B;margin-bottom:24px;}
+  .progress-bar-fill{height:100%;background:linear-gradient(90deg,#38BDF8,#6366F1,#A78BFA);border-radius:100px;transition:width .6s ease;box-shadow:0 0 20px #38BDF888;width:0%;}
+  .match-current{background:#020617;border:1px solid #1E293B;border-radius:12px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+  .match-current-label{color:#64748B;font-size:11px;letter-spacing:3px;font-weight:700;margin-bottom:4px;}
+  .match-current-name{color:#F1F5F9;font-size:16px;font-weight:800;}
+  .match-current-count{color:#38BDF8;font-size:22px;font-weight:900;}
+  .match-current-sub{color:#475569;font-size:11px;}
+  .agents-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;}
+  .agent-chip{padding:12px 14px;border-radius:12px;background:#0A0F1E;border:1.5px solid #1E293B;transition:all .4s;display:flex;align-items:center;gap:10px;}
+  .agent-chip.running{background:#1E293B;}
+  .agent-chip.done{}
+  .agent-icon{font-size:18px;}
+  .agent-name{font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#475569;}
+  .agent-chip.running .agent-name{color:#F1F5F9;}
+  .agent-status{font-size:10px;color:#334155;margin-top:2px;}
+  .agent-chip.running .agent-status{color:#FCD34D;}
+  .agent-chip.done .agent-status{color:#10B981;}
+
+  /* TOP 5 */
+  .top5-header{display:flex;align-items:center;gap:16px;margin-bottom:24px;flex-wrap:wrap;}
+  .top5-title{font-size:22px;font-weight:900;letter-spacing:4px;color:#F1F5F9;margin:0;}
+  .top5-line{flex:1;height:1px;background:linear-gradient(90deg,#38BDF855,transparent);}
+  .top5-date{color:#64748B;font-size:13px;font-weight:600;}
+
+  .pick-card{background:linear-gradient(160deg,#0F172A,#1E293B20);border:2px solid #1E293B;border-radius:20px;margin-bottom:20px;overflow:hidden;}
+  .pick-card.gold{border-color:#FCD34D44;box-shadow:0 4px 60px #FCD34D11;}
+  .pick-header{padding:22px 26px;border-bottom:1px solid #1E293B;display:flex;align-items:center;gap:18px;flex-wrap:wrap;}
+  .pick-card.gold .pick-header{background:linear-gradient(90deg,#FCD34D08,transparent);}
+  .pick-medal{font-size:32px;}
+  .pick-match{flex:1;min-width:200px;}
+  .pick-teams{font-size:22px;font-weight:900;color:#F1F5F9;}
+  .pick-comp{color:#64748B;font-size:13px;margin-top:4px;font-weight:500;}
+  .pick-conf{text-align:right;flex-shrink:0;}
+  .pick-conf-num{font-size:40px;font-weight:900;line-height:1;}
+  .pick-conf-label{color:#475569;font-size:11px;letter-spacing:2px;font-weight:700;margin-top:4px;}
+
+  .pick-body{padding:24px 26px;}
+  .bet-banner{border-radius:14px;padding:18px 22px;margin-bottom:20px;border:1px solid transparent;}
+  .bet-banner-label{color:#94A3B8;font-size:11px;letter-spacing:3px;font-weight:700;margin-bottom:8px;}
+  .bet-banner-value{font-size:22px;font-weight:900;color:#F1F5F9;}
+
+  .money-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px;}
+  .money-cell{background:#020617;border:1px solid #1E293B;border-radius:12px;padding:16px;text-align:center;}
+  .money-cell-label{color:#64748B;font-size:10px;letter-spacing:1px;font-weight:700;margin-bottom:8px;}
+  .money-cell-value{font-size:22px;font-weight:900;}
+  .money-cell-sub{color:#334155;font-size:10px;margin-top:4px;}
+
+  .formula-box{background:#0F172A;border:1px solid #1E293B;border-radius:10px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .formula-label{color:#475569;font-size:12px;font-weight:600;}
+  .formula-part{font-size:13px;}
+
+  .resume-box{background:#0A0F1E;border:1px solid #1E293B;border-radius:12px;padding:18px;margin-bottom:14px;}
+  .resume-label{color:#64748B;font-size:11px;letter-spacing:2px;font-weight:700;margin-bottom:10px;}
+  .resume-text{color:#CBD5E1;font-size:14px;line-height:1.8;}
+
+  .risk-box{background:#EF444410;border:1px solid #EF444433;border-radius:10px;padding:14px 16px;margin-bottom:14px;}
+  .risk-text{color:#FCA5A5;font-size:13px;line-height:1.6;}
+
+  .cotes-row{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap;align-items:center;}
+  .cotes-label{color:#475569;font-size:12px;font-weight:600;}
+  .cote-chip{background:#1E293B;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:700;}
+
+  .btn-expand{width:100%;background:transparent;border:1px solid #1E293B;color:#64748B;padding:12px;border-radius:12px;cursor:pointer;font-size:12px;letter-spacing:2px;font-weight:700;transition:all .2s;}
+  .btn-expand:hover{border-color:#38BDF855;color:#94A3B8;}
+
+  .agents-reports{margin-top:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;}
+  .agent-report{background:#020617;border-radius:12px;padding:16px;border:1.5px solid #1E293B;}
+  .agent-report-header{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+  .agent-report-name{font-size:12px;font-weight:800;letter-spacing:1px;}
+  .agent-report-text{color:#94A3B8;font-size:12px;line-height:1.8;white-space:pre-wrap;max-height:240px;overflow-y:auto;}
+
+  /* EMPTY STATE */
+  .empty{text-align:center;padding:100px 20px;}
+  .empty-ball{font-size:80px;opacity:.15;display:block;margin-bottom:24px;}
+  .empty-title{color:#475569;font-size:16px;font-weight:600;}
+  .empty-sub{color:#334155;font-size:12px;margin-top:8px;}
+
+  /* HISTORY */
+  .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:32px;}
+  .stat-card{background:#0F172A;border:1px solid #1E293B;border-radius:16px;padding:20px;text-align:center;}
+  .stat-card-label{color:#64748B;font-size:10px;letter-spacing:2px;font-weight:700;margin-bottom:10px;}
+  .stat-card-value{font-size:28px;font-weight:900;}
+
+  .history-day{margin-bottom:32px;}
+  .history-day-header{display:flex;align-items:center;gap:14px;margin-bottom:14px;flex-wrap:wrap;}
+  .history-day-date{color:#F1F5F9;font-size:15px;font-weight:800;}
+
+  .history-pick{background:#0F172A;border:1.5px solid #1E293B;border-radius:14px;padding:18px 20px;margin-bottom:12px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;transition:border-color .2s;}
+  .history-pick.win{border-color:#10B98155;}
+  .history-pick.loss{border-color:#EF444455;}
+  .history-pick-info{flex:1;min-width:260px;}
+  .history-pick-teams{color:#F1F5F9;font-size:16px;font-weight:800;}
+  .history-pick-comp{color:#64748B;font-size:12px;margin-top:3px;}
+  .history-pick-bet{color:#38BDF8;font-size:14px;font-weight:700;margin-top:8px;}
+  .history-pick-meta{color:#64748B;font-size:12px;margin-top:4px;display:flex;gap:14px;flex-wrap:wrap;}
+  .history-pick-actions{display:flex;gap:10px;flex-shrink:0;}
+  .btn-win,.btn-loss{padding:12px 20px;border-radius:10px;font-size:12px;font-weight:800;cursor:pointer;border:1.5px solid;transition:all .2s;}
+  .btn-win{background:#1E293B;border-color:#334155;color:#64748B;}
+  .btn-win.active{background:#10B98122;border-color:#10B981;color:#10B981;}
+  .btn-loss{background:#1E293B;border-color:#334155;color:#64748B;}
+  .btn-loss.active{background:#EF444422;border-color:#EF4444;color:#EF4444;}
+
+  .hidden{display:none!important;}
+</style>
+</head>
+<body>
+
+<!-- ══════════════ KEYS PAGE ══════════════ -->
+<div id="keys-page">
+  <div class="keys-box">
+    <div class="logo">
+      <span class="ball">⚽</span>
+      <h1>ORACLE</h1>
+      <p>FOOTBALL · 9 AGENTS IA · TOP 5</p>
+      <div class="logo-line"></div>
+    </div>
+
+    <div class="field-wrap">
+      <label class="field-label">🔑 Clé API Anthropic</label>
+      <input class="field-input" id="api-key-input" type="password" placeholder="sk-ant-api03-..."/>
+    </div>
+
+    <div class="field-wrap">
+      <label class="field-label">💰 Bankroll (€)</label>
+      <input class="field-input bankroll" id="bankroll-input" type="number" value="100" min="1"/>
+      <div class="field-hint">Utilisé pour calculer tes mises en euros</div>
+    </div>
+
+    <div class="info-box">
+      <div class="info-title">CE QUE ÇA FAIT</div>
+      <div class="info-item">✅ Recherche web auto des matchs du jour</div>
+      <div class="info-item">✅ 9 agents IA analysent chaque match</div>
+      <div class="info-item">✅ Mises + gains calculés en euros</div>
+      <div class="info-item">✅ Historique WIN/LOSS + win rate + profit</div>
+      <div class="info-cost">~0.10€ par scan · 5$ ≈ 50 scans</div>
+    </div>
+
+    <button class="btn-enter" id="btn-enter" onclick="enterApp()">ENTRER DANS L'ORACLE →</button>
+    <p class="privacy">Clé stockée localement · Jamais transmise au chat</p>
+  </div>
+</div>
+
+<!-- ══════════════ MAIN PAGE ══════════════ -->
+<div id="main-page">
+
+  <div class="header">
+    <div class="header-inner">
+      <div class="header-logo">
+        <span class="header-ball">⚽</span>
+        <div>
+          <div class="header-title">ORACLE</div>
+          <div class="header-sub">9 AGENTS · FOOTBALL AI</div>
+        </div>
+      </div>
+      <div class="header-stats">
+        <div class="stat-chip green" id="chip-bankroll">💰 100€</div>
+        <div class="stat-chip hidden" id="chip-wr"></div>
+        <button class="btn-settings" onclick="goSettings()">⚙️ Réglages</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <div class="tabs-inner">
+      <button class="tab-btn active" onclick="switchTab('today')">🎯 AUJOURD'HUI</button>
+      <button class="tab-btn" onclick="switchTab('history')">📊 HISTORIQUE</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- TODAY TAB -->
+    <div id="tab-today">
+
+      <div class="scan-card">
+        <!-- IDLE STATE -->
+        <div class="scan-idle" id="scan-idle">
+          <div>
+            <div class="scan-title">Scan du jour</div>
+            <div class="scan-sub">Récupère tous les matchs · 9 agents par match · génère le Top 5 optimal</div>
+          </div>
+          <button class="btn-scan" onclick="launchScan()">🚀 LANCER LE SCAN</button>
+        </div>
+
+        <!-- RUNNING STATE -->
+        <div class="progress-section hidden" id="scan-running">
+          <div class="progress-header">
+            <div class="progress-msg" id="progress-msg">Initialisation...</div>
+            <div class="progress-pct" id="progress-pct">0%</div>
+          </div>
+          <div class="progress-bar-wrap">
+            <div class="progress-bar-fill" id="progress-bar"></div>
+          </div>
+
+          <div class="match-current hidden" id="match-current-box">
+            <div>
+              <div class="match-current-label">MATCH EN COURS</div>
+              <div class="match-current-name" id="match-current-name">Préparation...</div>
+            </div>
+            <div style="text-align:right">
+              <div class="match-current-count" id="match-count">0/0</div>
+              <div class="match-current-sub">matchs analysés</div>
+            </div>
+          </div>
+
+          <div class="agents-grid" id="agents-grid"></div>
+        </div>
+      </div>
+
+      <!-- TOP 5 RESULTS -->
+      <div id="top5-section" class="hidden">
+        <div class="top5-header">
+          <h2 class="top5-title" id="top5-title">🏆 TOP 5 DU JOUR</h2>
+          <div class="top5-line"></div>
+          <div class="top5-date" id="top5-date"></div>
+        </div>
+        <div id="top5-cards"></div>
+      </div>
+
+      <!-- EMPTY STATE -->
+      <div class="empty" id="empty-state">
+        <span class="empty-ball">⚽</span>
+        <div class="empty-title">Lance le scan pour obtenir le Top 5 du jour</div>
+        <div class="empty-sub">Chaque matin · ~10 minutes · 9 agents par match</div>
+      </div>
+
+    </div>
+
+    <!-- HISTORY TAB -->
+    <div id="tab-history" class="hidden">
+      <div class="stats-grid" id="stats-grid"></div>
+      <div id="history-list"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════
+let API_KEY = "";
+let BANKROLL = 100;
+let history = [];
+let top5Results = [];
+let expandedIdx = null;
+let currentTab = "today";
+let agentStatuses = {};
+
+const AGENTS = [
+  {id:"tact",  icon:"🧠",name:"Tacticien",       color:"#38BDF8", sys:"Expert tacticien football. Analyse formations, systèmes, pressing, transitions, duels. Forces et faiblesses tactiques. Français, 120 mots max."},
+  {id:"stat",  icon:"📊",name:"Statisticien",     color:"#34D399", sys:"Analyste statistique football. xG, forme récente, H2H, buts, domicile/extérieur. Probabilités chiffrées. Français, 120 mots max."},
+  {id:"doc",   icon:"🏃",name:"Médecin",          color:"#FCD34D", sys:"Médecin sportif football. Fatigue, blessures probables, rotations, récupération, impact physique. Français, 120 mots max."},
+  {id:"scout", icon:"🧓",name:"L'Ancien",         color:"#FB923C", sys:"Scout légendaire 40 ans. Patterns cachés, équipes pièges, faux bilans. Ce que les stats ne montrent pas. Français, 120 mots max."},
+  {id:"market",icon:"💰",name:"Marché",           color:"#F87171", sys:"Expert value betting. Probabilité implicite cotes, value bets, biais bookmaker. Français, 120 mots max."},
+  {id:"psycho",icon:"🎭",name:"Psychologue",       color:"#C084FC", sys:"Psychologue sport. Enjeux, pression, derby, motivation, fatigue mentale. Français, 120 mots max."},
+  {id:"judge", icon:"⚖️",name:"Juge",             color:"#E2E8F0", sys:"Juge Arbitre suprême. Synthétise les 6 rapports. Consensus, divergences, pondère les avis. Français, 200 mots max."},
+  {id:"prof1", icon:"🎓",name:"Prof. Pragma.",    color:"#F97316", sys:"Professeur Pragmatique 40 ans. Méfiant, coupe optimisme, identifie failles. Corrige le Juge. Français, 150 mots max."},
+  {id:"prof2", icon:"🔭",name:"Prof. Vision.",    color:"#A78BFA", sys:`Professeur Visionnaire. Analyse courte (80 mots), puis VERDICT FINAL OBLIGATOIRE dans ce format exact (sans astérisques ni markdown) :
+
+PARI: [ex: Victoire Chelsea / Plus de 2.5 buts / BTTS Oui]
+CONFIANCE: [chiffre 0-100]
+MISE_PCT: [chiffre 1-5]
+COTE_MINI: [chiffre décimal ex: 1.75]
+RISQUE: [une phrase]
+RESUME: [3 phrases expliquant pourquoi]`},
+];
+
+// ══════════════════════════════════════════════════════
+// STORAGE
+// ══════════════════════════════════════════════════════
+function saveLocal(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch {} }
+function loadLocal(key, def) { try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : def; } catch { return def; } }
+
+// ══════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════
+window.onload = () => {
+  API_KEY = loadLocal("oracle_key","");
+  BANKROLL = loadLocal("oracle_bank",100);
+  history = loadLocal("oracle_history",[]);
+  document.getElementById("bankroll-input").value = BANKROLL;
+  if (API_KEY.length > 20) {
+    document.getElementById("api-key-input").value = API_KEY;
+    enterApp();
+  }
+};
+
+// ══════════════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════════════
+function enterApp() {
+  const key = document.getElementById("api-key-input").value.trim();
+  const bank = parseFloat(document.getElementById("bankroll-input").value) || 0;
+  if (key.length < 20 || bank <= 0) return;
+  API_KEY = key; BANKROLL = bank;
+  saveLocal("oracle_key", key); saveLocal("oracle_bank", bank);
+  document.getElementById("keys-page").style.display = "none";
+  document.getElementById("main-page").style.display = "block";
+  updateHeader(); renderHistory();
+}
+
+function goSettings() {
+  document.getElementById("keys-page").style.display = "flex";
+  document.getElementById("main-page").style.display = "none";
+}
+
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll(".tab-btn").forEach((b,i)=>b.classList.toggle("active",["today","history"][i]===tab));
+  document.getElementById("tab-today").classList.toggle("hidden", tab!=="today");
+  document.getElementById("tab-history").classList.toggle("hidden", tab!=="history");
+  if (tab==="history") renderHistory();
+}
+
+// ══════════════════════════════════════════════════════
+// HEADER
+// ══════════════════════════════════════════════════════
+function updateHeader() {
+  document.getElementById("chip-bankroll").textContent = `💰 ${BANKROLL.toFixed(2)}€`;
+  const decided = history.flatMap(d=>d.picks).filter(p=>p.result!==null);
+  const wins = decided.filter(p=>p.result==="win").length;
+  const losses = decided.filter(p=>p.result==="loss").length;
+  const wr = decided.length>0 ? Math.round(wins/decided.length*100) : null;
+  const profit = decided.reduce((acc,p)=>{
+    const m=(BANKROLL*(p.misePct||2))/100;
+    if(p.result==="win"&&p.coteMini) return acc+(m*p.coteMini-m);
+    if(p.result==="loss") return acc-m;
+    return acc;
+  },0);
+  const chip = document.getElementById("chip-wr");
+  if (wr!==null) {
+    chip.classList.remove("hidden");
+    chip.className = `stat-chip ${wr>=55?"win":"loss"}`;
+    chip.style.color = wr>=55?"#10B981":"#EF4444";
+    chip.textContent = `📈 ${wr}% · ${profit>=0?"+":""}${profit.toFixed(2)}€`;
+  } else { chip.classList.add("hidden"); }
+}
+
+// ══════════════════════════════════════════════════════
+// CLAUDE API
+// ══════════════════════════════════════════════════════
+async function callClaude(system, user, maxTokens=800) {
+  const r = await fetch("https://api.anthropic.com/v1/messages",{
+    method:"POST",
+    headers:{"Content-Type":"application/json","x-api-key":API_KEY,"anthropic-version":"2023-06-01"},
+    body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:maxTokens,system,messages:[{role:"user",content:user}]})
+  });
+  if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.error?.message||`Erreur ${r.status}`);}
+  return (await r.json()).content[0].text;
+}
+
+// ══════════════════════════════════════════════════════
+// FETCH MATCHES
+// ══════════════════════════════════════════════════════
+async function fetchMatches() {
+  const today = new Date().toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+  setProgress("🌍 Recherche des matchs du jour...", 3);
+
+  const messages = [{role:"user",content:`Cherche les matchs football d'aujourd'hui ${today} dans les grandes ligues (Ligue 1, Premier League, Liga, Serie A, Bundesliga, Champions League, Europa League, etc.).\n\nRetourne UNIQUEMENT ce JSON strict (15 matchs max les plus importants) :\n{"matches":[{"home":"Equipe A","away":"Equipe B","competition":"Premier League","heure":"20:45","cote_home":1.85,"cote_draw":3.40,"cote_away":4.20,"contexte":"forme équipes, blessés connus, enjeux du match"}]}\n\nEstime les cotes si non trouvées. UNIQUEMENT le JSON, zéro texte autour.`}];
+
+  let matches=[], turns=0;
+  while(turns<7 && matches.length===0){
+    turns++;
+    const res = await fetch("https://api.anthropic.com/v1/messages",{
+      method:"POST",
+      headers:{"Content-Type":"application/json","x-api-key":API_KEY,"anthropic-version":"2023-06-01"},
+      body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:3000,
+        tools:[{type:"web_search_20250305",name:"web_search"}],
+        system:"Expert football. Après recherche, réponds UNIQUEMENT avec le JSON demandé. Aucun texte, aucun markdown.",
+        messages})
+    });
+    if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e.error?.message||`Claude ${res.status}`);}
+    const data = await res.json();
+
+    if(data.stop_reason==="tool_use"){
+      messages.push({role:"assistant",content:data.content});
+      const tr=data.content.filter(b=>b.type==="tool_use").map(b=>({type:"tool_result",tool_use_id:b.id,content:"OK"}));
+      if(tr.length) messages.push({role:"user",content:tr});
+      setProgress(`🔎 Recherche web en cours (tour ${turns})...`, 3+turns*2);
+      continue;
+    }
+
+    const raw = data.content.filter(b=>b.type==="text").map(b=>b.text).join("");
+    for(const fn of [
+      ()=>JSON.parse(raw.trim()),
+      ()=>JSON.parse((raw.match(/```(?:json)?\s*([\s\S]*?)```/)||[])[1]?.trim()||""),
+      ()=>JSON.parse((raw.match(/(\{[\s\S]*?"matches"\s*:\s*\[[\s\S]*?\]\s*\})/)||[])[1]||""),
+    ]){try{const p=fn();if(p?.matches?.length){matches=p.matches;break;}}catch{}}
+
+    if(matches.length===0){
+      setProgress("📝 Reformatage...",14);
+      const rr = await fetch("https://api.anthropic.com/v1/messages",{
+        method:"POST",headers:{"Content-Type":"application/json","x-api-key":API_KEY,"anthropic-version":"2023-06-01"},
+        body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:2000,
+          system:"Réponds UNIQUEMENT en JSON valide. Zéro texte autour, zéro markdown.",
+          messages:[{role:"user",content:`Reformate en JSON exact :\n{"matches":[{"home":"X","away":"Y","competition":"Z","heure":"HH:MM","cote_home":1.8,"cote_draw":3.5,"cote_away":4.0,"contexte":"infos"}]}\n\nDonnées brutes :\n${raw.slice(0,3000)}`}]})
+      });
+      const rd=await rr.json();
+      const rt=rd.content.filter(b=>b.type==="text").map(b=>b.text).join("").trim();
+      for(const fn of [()=>JSON.parse(rt),()=>JSON.parse((rt.match(/(\{[\s\S]*?"matches"[\s\S]*?\]\s*\})/)||[])[1]||"")]){
+        try{const p=fn();if(p?.matches?.length){matches=p.matches;break;}}catch{}
+      }
+    }
+  }
+  if(!matches.length) throw new Error("Aucun match trouvé aujourd'hui. Réessaie dans quelques minutes.");
+  return matches;
+}
+
+// ══════════════════════════════════════════════════════
+// PARSE VERDICT
+// ══════════════════════════════════════════════════════
+function parseVerdict(text){
+  if(!text) return {pari:"Non disponible",confidence:50,misePct:2,coteMini:null,risque:"",resume:""};
+  const t=text.replace(/\*+/g,"").replace(/^#+[^\n]*/gm,"");
+  const g=(rx,fb="")=>{const m=t.match(rx);return m?m[1].trim():fb;};
+  return {
+    pari:g(/PARI\s*:\s*([^\n]+)/i,"Voir analyse"),
+    confidence:Math.min(100,Math.max(0,parseInt(g(/CONFIANCE\s*:\s*(\d+)/i,"50"))||50)),
+    misePct:Math.min(5,Math.max(1,parseInt(g(/MISE_PCT\s*:\s*(\d+)/i,"2"))||2)),
+    coteMini:parseFloat(g(/COTE[_\s]*MINI\s*:\s*([\d.,]+)/i,"0").replace(",","."))||null,
+    risque:g(/RISQUE\s*:\s*([^\n]+)/i,""),
+    resume:g(/RESUME\s*:\s*([\s\S]+?)(?=\n[A-Z_]+\s*:|$)/i,""),
+  };
+}
+
+// ══════════════════════════════════════════════════════
+// ANALYZE MATCH
+// ══════════════════════════════════════════════════════
+async function analyzeMatch(match, matchIdx, total){
+  const base=`${match.home} vs ${match.away} | ${match.competition} | ${match.heure||"?"}h\nCotes : Dom ${match.cote_home??"?"} | Nul ${match.cote_draw??"?"} | Ext ${match.cote_away??""}\nContexte : ${match.contexte||"Pas d'info"}`;
+  const reports={};
+
+  for(const ag of AGENTS.slice(0,6)){
+    setAgentStatus(ag.id,"running");
+    try{reports[ag.id]=await callClaude(ag.sys,`${base}\n\nDonne ton analyse experte.`,350);}
+    catch(e){reports[ag.id]=`Indisponible: ${e.message}`;}
+    setAgentStatus(ag.id,"done");
+    const ai=AGENTS.findIndex(a=>a.id===ag.id);
+    setProgress(null, 15+(matchIdx/total)*80+((ai+1)/9)*(80/total));
+  }
+
+  const allR=AGENTS.slice(0,6).map(a=>`[${a.icon} ${a.name}]\n${reports[a.id]}`).join("\n\n");
+  setAgentStatus("judge","running");
+  try{reports.judge=await callClaude(AGENTS[6].sys,`${base}\n\n--- RAPPORTS ---\n${allR}\n\nSynthétise.`,500);}
+  catch(e){reports.judge=`Erreur: ${e.message}`;}
+  setAgentStatus("judge","done");
+
+  setAgentStatus("prof1","running");
+  try{reports.prof1=await callClaude(AGENTS[7].sys,`${base}\n\nJUGE:\n${reports.judge}\n\nCorrige.`,400);}
+  catch(e){reports.prof1=`Erreur: ${e.message}`;}
+  setAgentStatus("prof1","done");
+
+  setAgentStatus("prof2","running");
+  try{reports.prof2=await callClaude(AGENTS[8].sys,`${base}\n\nJUGE:\n${reports.judge}\n\nPRAGMATIQUE:\n${reports.prof1}\n\nDonne ta vision puis VERDICT FINAL exactement comme demandé (sans astérisques).`,700);}
+  catch(e){reports.prof2=`Erreur: ${e.message}`;}
+  setAgentStatus("prof2","done");
+
+  return {match,reports,verdict:parseVerdict(reports.prof2)};
+}
+
+// ══════════════════════════════════════════════════════
+// PROGRESS HELPERS
+// ══════════════════════════════════════════════════════
+function setProgress(msg, pct){
+  if(msg) document.getElementById("progress-msg").textContent=msg;
+  if(pct!==undefined&&pct!==null){
+    const p=Math.min(100,Math.round(pct));
+    document.getElementById("progress-pct").textContent=p+"%";
+    document.getElementById("progress-bar").style.width=p+"%";
+  }
+}
+
+function buildAgentsGrid(){
+  const grid=document.getElementById("agents-grid");
+  grid.innerHTML=AGENTS.map(a=>`
+    <div class="agent-chip" id="agent-chip-${a.id}" style="border-color:#1E293B">
+      <span class="agent-icon">${a.icon}</span>
+      <div style="flex:1;min-width:0">
+        <div class="agent-name" style="color:#475569" id="agent-name-${a.id}">${a.name}</div>
+        <div class="agent-status" id="agent-status-${a.id}">En attente</div>
+      </div>
+    </div>`).join("");
+}
+
+function setAgentStatus(id, status){
+  agentStatuses[id]=status;
+  const chip=document.getElementById(`agent-chip-${id}`);
+  const name=document.getElementById(`agent-name-${id}`);
+  const st=document.getElementById(`agent-status-${id}`);
+  const ag=AGENTS.find(a=>a.id===id);
+  if(!chip||!ag) return;
+  chip.className=`agent-chip ${status}`;
+  chip.style.background=status==="done"?ag.color+"1A":status==="running"?"#1E293B":"#0A0F1E";
+  chip.style.borderColor=status==="done"?ag.color+"88":status==="running"?ag.color+"55":"#1E293B";
+  name.style.color=status==="done"?ag.color:status==="running"?"#F1F5F9":"#475569";
+  st.textContent=status==="done"?"✓ Terminé":status==="running"?"⏳ En cours":"En attente";
+}
+
+// ══════════════════════════════════════════════════════
+// LAUNCH SCAN
+// ══════════════════════════════════════════════════════
+async function launchScan(){
+  document.getElementById("scan-idle").classList.add("hidden");
+  document.getElementById("scan-running").classList.remove("hidden");
+  document.getElementById("empty-state").classList.add("hidden");
+  document.getElementById("top5-section").classList.add("hidden");
+  buildAgentsGrid();
+  agentStatuses={};
+  setProgress("Initialisation...",0);
+
+  try{
+    const matches=await fetchMatches();
+    const toAnalyze=matches.slice(0,10);
+    setProgress(`✅ ${matches.length} matchs trouvés — analyse de ${toAnalyze.length} matchs`,15);
+    document.getElementById("match-current-box").classList.remove("hidden");
+
+    const results=[];
+    for(let i=0;i<toAnalyze.length;i++){
+      const m=toAnalyze[i];
+      agentStatuses={};
+      buildAgentsGrid();
+      document.getElementById("match-current-name").textContent=`${m.home} vs ${m.away}`;
+      document.getElementById("match-count").textContent=`${i}/${toAnalyze.length}`;
+      setProgress(`🔍 ${i+1}/${toAnalyze.length} : ${m.home} vs ${m.away}`, 15+(i/toAnalyze.length)*80);
+      try{results.push(await analyzeMatch(m,i,toAnalyze.length));}catch(e){console.error(e);}
+      document.getElementById("match-count").textContent=`${i+1}/${toAnalyze.length}`;
+    }
+
+    const sorted=results.sort((a,b)=>b.verdict.confidence-a.verdict.confidence).slice(0,5);
+    top5Results=sorted;
+    setProgress(`🏆 Top ${sorted.length} paris générés !`,100);
+
+    // Save history
+    const dateStr=new Date().toLocaleDateString("fr-FR");
+    const entry={date:dateStr,timestamp:Date.now(),bankrollAtTime:BANKROLL,
+      picks:sorted.map(r=>({home:r.match.home,away:r.match.away,competition:r.match.competition,heure:r.match.heure,
+        cote_home:r.match.cote_home,cote_draw:r.match.cote_draw,cote_away:r.match.cote_away,
+        ...r.verdict,allReports:r.reports,result:null}))};
+    history=[entry,...history.filter(e=>e.date!==dateStr)];
+    saveLocal("oracle_history",history);
+
+    // Render top 5
+    renderTop5(sorted);
+    updateHeader();
+
+  }catch(e){
+    setProgress(`❌ ${e.message}`,0);
+    document.getElementById("scan-idle").classList.remove("hidden");
+    document.getElementById("scan-running").classList.add("hidden");
+    document.getElementById("empty-state").classList.remove("hidden");
+    return;
+  }
+
+  document.getElementById("scan-running").classList.add("hidden");
+  document.getElementById("scan-idle").classList.remove("hidden");
+}
+
+// ══════════════════════════════════════════════════════
+// RENDER TOP 5
+// ══════════════════════════════════════════════════════
+const cc=(c)=>c>=70?"#10B981":c>=55?"#F59E0B":"#EF4444";
+const medals=["🥇","🥈","🥉","4️⃣","5️⃣"];
+
+function renderTop5(results){
+  const sec=document.getElementById("top5-section");
+  const cards=document.getElementById("top5-cards");
+  sec.classList.remove("hidden");
+  document.getElementById("top5-title").textContent=`🏆 TOP ${results.length} DU JOUR`;
+  document.getElementById("top5-date").textContent=new Date().toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"});
+
+  cards.innerHTML=results.map((r,idx)=>{
+    const v=r.verdict;
+    const mise=+(BANKROLL*v.misePct/100).toFixed(2);
+    const cote=v.coteMini||0;
+    const gainTotal=cote?+(mise*cote).toFixed(2):null;
+    const benefice=gainTotal?+(gainTotal-mise).toFixed(2):null;
+    const confCol=cc(v.confidence);
+
+    return `
+    <div class="pick-card ${idx===0?"gold":""}" id="pick-${idx}">
+      <div class="pick-header">
+        <div class="pick-medal">${medals[idx]}</div>
+        <div class="pick-match">
+          <div class="pick-teams">${r.match.home} <span style="color:#334155;font-weight:300;margin:0 8px">vs</span> ${r.match.away}</div>
+          <div class="pick-comp">${r.match.competition}${r.match.heure?` · ${r.match.heure}`:""}</div>
+        </div>
+        <div class="pick-conf">
+          <div class="pick-conf-num" style="color:${confCol}">${v.confidence}%</div>
+          <div class="pick-conf-label">CONFIANCE</div>
+        </div>
+      </div>
+      <div class="pick-body">
+
+        <div class="bet-banner" style="background:${confCol}15;border-color:${confCol}44">
+          <div class="bet-banner-label">🎯 PARI RECOMMANDÉ</div>
+          <div class="bet-banner-value">${v.pari}</div>
+        </div>
+
+        <div class="money-grid">
+          <div class="money-cell">
+            <div class="money-cell-label">💰 MISE</div>
+            <div class="money-cell-value" style="color:#A78BFA">${mise}€</div>
+            <div class="money-cell-sub">${v.misePct}% de ${BANKROLL}€</div>
+          </div>
+          <div class="money-cell">
+            <div class="money-cell-label">⚡ COTE MINI</div>
+            <div class="money-cell-value" style="color:#FB923C">${cote?cote:"—"}</div>
+            <div class="money-cell-sub">à respecter</div>
+          </div>
+          <div class="money-cell">
+            <div class="money-cell-label">🎁 GAIN TOTAL</div>
+            <div class="money-cell-value" style="color:#10B981">${gainTotal?gainTotal+"€":"—"}</div>
+            <div class="money-cell-sub">si pari gagnant</div>
+          </div>
+          <div class="money-cell">
+            <div class="money-cell-label">💵 BÉNÉFICE NET</div>
+            <div class="money-cell-value" style="color:#34D399">${benefice?"+"+benefice+"€":"—"}</div>
+            <div class="money-cell-sub">profit net</div>
+          </div>
+        </div>
+
+        ${cote?`<div class="formula-box">
+          <span class="formula-label">📐 Calcul :</span>
+          <span class="formula-part" style="color:#94A3B8">Mise ${mise}€</span>
+          <span style="color:#475569">×</span>
+          <span class="formula-part" style="color:#FB923C;font-weight:700">cote ${cote}</span>
+          <span style="color:#475569">=</span>
+          <span class="formula-part" style="color:#10B981;font-weight:900;font-size:14px">${gainTotal}€ retour</span>
+          <span style="color:#475569;font-size:12px">(+${benefice}€ net)</span>
+        </div>`:""}
+
+        ${v.resume?`<div class="resume-box">
+          <div class="resume-label">📝 POURQUOI CE PARI</div>
+          <div class="resume-text">${v.resume}</div>
+        </div>`:""}
+
+        ${v.risque?`<div class="risk-box">
+          <span class="risk-text"><strong>⚠️ Risque : </strong>${v.risque}</span>
+        </div>`:""}
+
+        <div class="cotes-row">
+          <span class="cotes-label">Cotes Betclic :</span>
+          ${[["Domicile",r.match.cote_home],["Nul",r.match.cote_draw],["Extérieur",r.match.cote_away]].map(([l,c])=>`
+            <div class="cote-chip"><span style="color:#64748B">${l} </span><span style="color:#10B981">${c??"—"}</span></div>`).join("")}
+        </div>
+
+        <button class="btn-expand" onclick="toggleExpand(${idx})">▼ VOIR LES 9 ANALYSES DÉTAILLÉES</button>
+
+        <div class="agents-reports hidden" id="reports-${idx}">
+          ${AGENTS.map(ag=>r.reports[ag.id]?`
+            <div class="agent-report" style="border-color:${ag.color}33">
+              <div class="agent-report-header">
+                <span style="font-size:18px">${ag.icon}</span>
+                <span class="agent-report-name" style="color:${ag.color}">${ag.name.toUpperCase()}</span>
+              </div>
+              <div class="agent-report-text">${r.reports[ag.id]}</div>
+            </div>`:"").join("")}
+        </div>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function toggleExpand(idx){
+  const box=document.getElementById(`reports-${idx}`);
+  const btn=document.querySelector(`#pick-${idx} .btn-expand`);
+  const open=box.classList.toggle("hidden");
+  btn.textContent=open?"▼ VOIR LES 9 ANALYSES DÉTAILLÉES":"▲ MASQUER LES 9 ANALYSES";
+}
+
+// ══════════════════════════════════════════════════════
+// RENDER HISTORY
+// ══════════════════════════════════════════════════════
+function renderHistory(){
+  const allPicks=history.flatMap(d=>d.picks);
+  const decided=allPicks.filter(p=>p.result!==null);
+  const wins=decided.filter(p=>p.result==="win").length;
+  const losses=decided.filter(p=>p.result==="loss").length;
+  const wr=decided.length>0?Math.round(wins/decided.length*100):null;
+  const profit=decided.reduce((acc,p)=>{
+    const m=(BANKROLL*(p.misePct||2))/100;
+    if(p.result==="win"&&p.coteMini) return acc+(m*p.coteMini-m);
+    if(p.result==="loss") return acc-m;
+    return acc;
+  },0);
+
+  const profitColor=profit>=0?"#10B981":"#EF4444";
+  const wrColor=wr!==null?(wr>=55?"#10B981":"#EF4444"):"#475569";
+
+  document.getElementById("stats-grid").innerHTML=`
+    <div class="stat-card"><div class="stat-card-label">TOTAL PARIS</div><div class="stat-card-value" style="color:#94A3B8">${decided.length}</div></div>
+    <div class="stat-card"><div class="stat-card-label">GAGNÉS</div><div class="stat-card-value" style="color:#10B981">${wins}</div></div>
+    <div class="stat-card"><div class="stat-card-label">PERDUS</div><div class="stat-card-value" style="color:#EF4444">${losses}</div></div>
+    <div class="stat-card"><div class="stat-card-label">WIN RATE</div><div class="stat-card-value" style="color:${wrColor}">${wr!==null?wr+"%":"—"}</div></div>
+    <div class="stat-card"><div class="stat-card-label">PROFIT TOTAL</div><div class="stat-card-value" style="color:${profitColor}">${profit>=0?"+":""}${profit.toFixed(2)}€</div></div>
+  `;
+
+  if(history.length===0){
+    document.getElementById("history-list").innerHTML=`<div class="empty"><span class="empty-ball">📊</span><div class="empty-title">Aucun historique · Lance ton premier scan !</div></div>`;
+    return;
+  }
+
+  document.getElementById("history-list").innerHTML=history.map((day,di)=>`
+    <div class="history-day">
+      <div class="history-day-header">
+        <span class="history-day-date">📅 ${day.date}</span>
+        <span style="color:#10B981;font-size:13px;font-weight:700">✓ ${day.picks.filter(p=>p.result==="win").length} WIN</span>
+        <span style="color:#EF4444;font-size:13px;font-weight:700">✗ ${day.picks.filter(p=>p.result==="loss").length} LOSS</span>
+        <span style="color:#475569;font-size:12px">⏳ ${day.picks.filter(p=>p.result===null).length} en attente</span>
+      </div>
+      ${day.picks.map((pick,pi)=>{
+        const br=day.bankrollAtTime||BANKROLL;
+        const mise=+(br*(pick.misePct||2)/100).toFixed(2);
+        const gain=pick.coteMini?+(mise*pick.coteMini).toFixed(2):null;
+        return `<div class="history-pick ${pick.result||""}" id="hpick-${di}-${pi}">
+          <div class="history-pick-info">
+            <div class="history-pick-teams">${pick.home} vs ${pick.away}</div>
+            <div class="history-pick-comp">${pick.competition}${pick.heure?` · ${pick.heure}`:""}</div>
+            <div class="history-pick-bet">🎯 ${pick.pari}</div>
+            <div class="history-pick-meta">
+              <span>${pick.confidence}% confiance</span>
+              <span>Mise : ${mise}€</span>
+              <span>Cote mini : ${pick.coteMini||"—"}</span>
+              <span style="color:${pick.result==="win"?"#10B981":"#64748B"}">Gain potentiel : ${gain?gain+"€":"—"}</span>
+            </div>
+          </div>
+          <div class="history-pick-actions">
+            <button class="btn-win ${pick.result==="win"?"active":""}" onclick="markResult(${di},${pi},'win')">✅ WIN</button>
+            <button class="btn-loss ${pick.result==="loss"?"active":""}" onclick="markResult(${di},${pi},'loss')">❌ LOSS</button>
+          </div>
+        </div>`;
+      }).join("")}
+    </div>`).join("");
+}
+
+function markResult(di, pi, val){
+  const pick=history[di].picks[pi];
+  pick.result = pick.result===val ? null : val;
+  saveLocal("oracle_history",history);
+  renderHistory(); updateHeader();
+}
+</script>
+</body>
+</html>
