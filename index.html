@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Radar Intérim Caen : outil personnel de recherche et de classement d'offres d'intérim courtes autour de Caen.">
+  <meta name="theme-color" content="#07111f">
+  <title>Radar Intérim Caen</title>
+  <style>
+    :root{color-scheme:dark;--bg:#07111f;--panel:#0d1a2b;--line:#20324a;--text:#f6f8fb;--muted:#a9b7c9;--green:#42d392;--blue:#74a7ff;--amber:#ffc857}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(circle at 75% 10%,#173563 0,transparent 28%),radial-gradient(circle at 10% 75%,#0b3c35 0,transparent 26%),var(--bg);color:var(--text);min-height:100vh}
+    .wrap{width:min(1120px,calc(100% - 40px));margin:auto}.nav{display:flex;align-items:center;justify-content:space-between;padding:28px 0}.brand{display:flex;align-items:center;gap:12px;font-weight:800}.logo{display:grid;place-items:center;width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,var(--green),var(--blue));color:#05101c;font-weight:900}.badge{border:1px solid var(--line);background:rgba(13,26,43,.75);border-radius:999px;padding:9px 14px;color:var(--muted);font-size:14px}.hero{padding:78px 0 42px;display:grid;grid-template-columns:1.35fr .85fr;gap:44px;align-items:center}.eyebrow{color:var(--green);font-weight:800;letter-spacing:.13em;font-size:13px}.hero h1{font-size:clamp(44px,7vw,78px);line-height:.98;letter-spacing:-.055em;margin:16px 0 22px}.lead{font-size:clamp(18px,2.2vw,23px);line-height:1.55;color:var(--muted);max-width:720px}.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px}.button{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;padding:13px 18px;border-radius:12px;font-weight:800}.primary{background:var(--green);color:#06120e}.secondary{border:1px solid var(--line);color:var(--text);background:rgba(13,26,43,.75)}.panel{border:1px solid var(--line);background:linear-gradient(180deg,rgba(15,31,51,.95),rgba(9,21,36,.95));border-radius:24px;padding:24px;box-shadow:0 24px 70px rgba(0,0,0,.28)}.signal{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);padding:15px 0}.signal:last-child{border-bottom:0}.signal strong{font-size:17px}.signal span{color:var(--muted);font-size:14px}.dot{width:12px;height:12px;border-radius:50%;box-shadow:0 0 18px currentColor}.green{background:var(--green);color:var(--green)}.amber{background:var(--amber);color:var(--amber)}.red{background:#ff6b78;color:#ff6b78}.features{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:34px 0 80px}.card{border:1px solid var(--line);background:rgba(13,26,43,.72);border-radius:18px;padding:22px}.card h2{font-size:18px;margin:0 0 10px}.card p{color:var(--muted);line-height:1.55;margin:0}.footer{border-top:1px solid var(--line);padding:24px 0 40px;color:var(--muted);font-size:14px;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}@media(max-width:820px){.hero{grid-template-columns:1fr;padding-top:48px}.features{grid-template-columns:1fr}.badge{display:none}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav class="nav">
+      <div class="brand"><div class="logo">RI</div><div>Radar Intérim Caen</div></div>
+      <div class="badge">Projet personnel · Caen et alentours</div>
+    </nav>
+
+    <main>
+      <section class="hero">
+        <div>
+          <div class="eyebrow">RECHERCHE D'EMPLOI INTELLIGENTE</div>
+          <h1>Les offres d'intérim qui méritent vraiment une candidature.</h1>
+          <p class="lead">Radar Intérim Caen recherche, déduplique et classe les missions courtes autour de Caen. L'objectif est simple : repérer les annonces compatibles avec un profil polyvalent, sans diplôme obligatoire, sans expérience exigée et sans formation préalable.</p>
+          <div class="actions">
+            <a class="button primary" href="https://github.com/galaxie667petasse-oss/ORACLE">Voir le projet GitHub</a>
+            <a class="button secondary" href="#fonctionnement">Découvrir le fonctionnement</a>
+          </div>
+        </div>
+        <aside class="panel" aria-label="Règles de classement">
+          <div class="signal"><div><strong>Feu vert</strong><br><span>Critères essentiels vérifiés</span></div><i class="dot green"></i></div>
+          <div class="signal"><div><strong>À vérifier</strong><br><span>Une information importante manque</span></div><i class="dot amber"></i></div>
+          <div class="signal"><div><strong>Rejetée</strong><br><span>Prérequis ou durée incompatible</span></div><i class="dot red"></i></div>
+        </aside>
+      </section>
+
+      <section class="features" id="fonctionnement">
+        <article class="card"><h2>Filtrage strict</h2><p>Intérim uniquement, missions courtes, débutants acceptés et absence de diplôme, CACES ou habilitation obligatoire.</p></article>
+        <article class="card"><h2>Sources publiques</h2><p>Analyse des offres publiques et connexion prévue à l'API officielle France Travail pour obtenir des données structurées.</p></article>
+        <article class="card"><h2>Décision rapide</h2><p>Chaque annonce reçoit un verdict clair avec les raisons du classement et un accès direct à la source originale.</p></article>
+      </section>
+    </main>
+
+    <footer class="footer"><span>Radar Intérim Caen</span><span>Application personnelle en cours de développement</span></footer>
+  </div>
+</body>
+</html>
